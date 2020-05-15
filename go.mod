@@ -1,4 +1,4 @@
-module o-reilly
+module chat
 
 go 1.13
 

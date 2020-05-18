@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/gomniauth/providers/facebook"
 	"github.com/stretchr/gomniauth/providers/github"
 	"github.com/stretchr/gomniauth/providers/google"
+	"github.com/stretchr/objx"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -27,10 +28,13 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// ただし、エラーが発生居売る場合には初期化時に実行される方が好ましい場合もある
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
-	err := t.templ.Execute(w, r)
-	if err != nil {
-		panic(err)
+	data := map[string]interface{}{
+		"Host": r.Host,
 	}
+	if authCookie, err := r.Cookie("auth"); err == nil {
+		data["UserData"] = objx.MustFromBase64(authCookie.Value)
+	}
+	t.templ.Execute(w, data)
 }
 
 func main() {

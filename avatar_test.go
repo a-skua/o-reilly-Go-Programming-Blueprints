@@ -29,12 +29,14 @@ func TestAuthAvatar(t *testing.T) {
 func TestGravatarAvatar(t *testing.T) {
 	var gravatarAvatar GravatarAvatar
 	client := new(client)
-	client.userData = map[string]interface{}{"email": testEmail}
+	client.userData = map[string]interface{}{
+		"userid": hash,
+	}
 	url, err := gravatarAvatar.GetAvatarURL(client)
 	if err != nil {
 		t.Error("GravatarAvatar.GetAvatarURLはエラーを返すべきではありません")
 	}
-	if url != testEmailURL {
+	if url != "//www.gravatar.com/avatar/"+hash {
 		t.Errorf("GravatarAvatar.GetAvatarURLが%sという誤った値を返しました", url)
 	}
 }

@@ -14,6 +14,12 @@ import (
 	"text/template"
 )
 
+var avatars Avatar = TryAvatars{
+	UseFileSystemAvatar,
+	UseAuthAvatar,
+	UseGravatar,
+}
+
 // templは1つのテンプレートを表します
 type templateHandler struct {
 	once     sync.Once
@@ -48,7 +54,7 @@ func main() {
 		google.New(googleid, googlesec, "http://localhost:8080/auth/callback/google"),
 	)
 
-	r := newRoom(UseFileSystemAvatar)
+	r := newRoom()
 	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.HandleFunc("/auth/", loginHandler)

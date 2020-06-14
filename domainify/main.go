@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"strings"
@@ -11,10 +13,30 @@ import (
 )
 
 var tlds = []string{"com", "net"}
+var tldsFile = flag.String("file", "", "top-level-domain-list file")
 
 const allowedChar = "abcdefghijklmnopqrstuvwxyz0123456789_-"
 
 func main() {
+	flag.Parse()
+	if tldsFile != nil && *tldsFile != "" {
+		content, err := ioutil.ReadFile(*tldsFile)
+		if err != nil {
+			panic(err)
+		}
+		if len(content) == 0 {
+			panic("file is empty")
+		}
+		var strs []string
+		for _, str := range strings.Split(string(content), "\n") {
+			if str == "" {
+				continue
+			}
+			strs = append(strs, str)
+		}
+		tlds = strs
+	}
+
 	rand.Seed(time.Now().UTC().UnixNano())
 	s := bufio.NewScanner(os.Stdin)
 

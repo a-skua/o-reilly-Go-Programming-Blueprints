@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"strings"
@@ -24,7 +26,28 @@ var transforms = []string{
 	"lets" + otherWord,
 }
 
+var transformsFile = flag.String("file", "", "transform rules file")
+
 func main() {
+	flag.Parse()
+	if transformsFile != nil && *transformsFile != "" {
+		content, err := ioutil.ReadFile(*transformsFile)
+		if err != nil {
+			panic(err)
+		}
+		if len(content) == 0 {
+			panic("file is empty")
+		}
+		var strs []string
+		for _, str := range strings.Split(string(content), "\n") {
+			if str == "" {
+				continue
+			}
+			strs = append(strs, str)
+		}
+		transforms = strs
+	}
+
 	rand.Seed(time.Now().UTC().UnixNano())
 	s := bufio.NewScanner(os.Stdin)
 	for s.Scan() {
